@@ -7,8 +7,6 @@ import {
   DollarSign,
   TrendingUp,
   TrendingDown,
-  ArrowUpRight,
-  ArrowDownRight,
   Store,
   CreditCard,
   AlertCircle,
@@ -32,7 +30,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { Bar, BarChart, XAxis, YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { Bar, BarChart, XAxis, YAxis, AreaChart, Area } from 'recharts';
 
 // بيانات وهمية للإحصائيات
 const STATS = [
@@ -117,19 +115,34 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+const getStatusBadge = (status: string) => {
+  switch (status) {
+    case 'مؤكد':
+      return <Badge className="bg-green-500">مؤكد</Badge>;
+    case 'قيد التجهيز':
+      return <Badge variant="secondary">قيد التجهيز</Badge>;
+    case 'تم الشحن':
+      return <Badge variant="outline">تم الشحن</Badge>;
+    case 'ملغي':
+      return <Badge variant="destructive">ملغي</Badge>;
+    default:
+      return <Badge>{status}</Badge>;
+  }
+};
+
 export default function AdminDashboard() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir="rtl">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+        <div className="text-right">
           <h1 className="text-2xl font-bold">لوحة التحكم</h1>
           <p className="text-muted-foreground">مرحباً بك في لوحة تحكم ChariDay</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Clock className="h-4 w-4 ml-2" />
-            آخر 7 أيام
+          <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            <span>آخر 7 أيام</span>
           </Button>
           <Button size="sm">
             تحديث البيانات
@@ -157,7 +170,7 @@ export default function AdminDashboard() {
                     {stat.change}
                   </div>
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 text-right">
                   <p className="text-2xl font-bold">{stat.value}</p>
                   <p className="text-sm text-muted-foreground">{stat.title}</p>
                 </div>
@@ -171,7 +184,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sales Chart */}
         <Card>
-          <CardHeader>
+          <CardHeader className="text-right">
             <CardTitle>المبيعات الشهرية</CardTitle>
             <CardDescription>المبيعات خلال آخر 7 أشهر</CardDescription>
           </CardHeader>
@@ -205,7 +218,7 @@ export default function AdminDashboard() {
 
         {/* Orders Chart */}
         <Card>
-          <CardHeader>
+          <CardHeader className="text-right">
             <CardTitle>الطلبات اليومية</CardTitle>
             <CardDescription>الطلبات خلال الأسبوع الحالي</CardDescription>
           </CardHeader>
@@ -238,7 +251,7 @@ export default function AdminDashboard() {
         {/* Recent Orders */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
-            <div>
+            <div className="text-right">
               <CardTitle>الطلبات الأخيرة</CardTitle>
               <CardDescription>آخر 5 طلبات</CardDescription>
             </div>
@@ -250,32 +263,21 @@ export default function AdminDashboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>رقم الطلب</TableHead>
-                  <TableHead>العميل</TableHead>
-                  <TableHead>المبلغ</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الوقت</TableHead>
+                  <TableHead className="text-right">رقم الطلب</TableHead>
+                  <TableHead className="text-right">العميل</TableHead>
+                  <TableHead className="text-right">المبلغ</TableHead>
+                  <TableHead className="text-right">الحالة</TableHead>
+                  <TableHead className="text-right">الوقت</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {RECENT_ORDERS.map((order) => (
                   <TableRow key={order.id}>
-                    <TableCell className="font-medium">{order.id}</TableCell>
-                    <TableCell>{order.customer}</TableCell>
-                    <TableCell>{order.total}</TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant={
-                          order.status === 'مؤكد' ? 'default' :
-                          order.status === 'قيد التجهيز' ? 'secondary' :
-                          order.status === 'تم الشحن' ? 'outline' :
-                          'destructive'
-                        }
-                      >
-                        {order.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">{order.time}</TableCell>
+                    <TableCell className="font-medium text-right">{order.id}</TableCell>
+                    <TableCell className="text-right">{order.customer}</TableCell>
+                    <TableCell className="text-right">{order.total}</TableCell>
+                    <TableCell className="text-right">{getStatusBadge(order.status)}</TableCell>
+                    <TableCell className="text-muted-foreground text-right">{order.time}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -287,7 +289,7 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           {/* Quick Actions */}
           <Card>
-            <CardHeader>
+            <CardHeader className="text-right">
               <CardTitle>إجراءات سريعة</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3">
@@ -312,8 +314,8 @@ export default function AdminDashboard() {
 
           {/* Pending Stores */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="text-right">
+              <CardTitle className="flex items-center gap-2 justify-end">
                 <AlertCircle className="h-5 w-5 text-yellow-500" />
                 متاجر في الانتظار
               </CardTitle>
@@ -326,7 +328,7 @@ export default function AdminDashboard() {
                       key={index}
                       className="flex items-center justify-between p-3 bg-muted rounded-lg"
                     >
-                      <div>
+                      <div className="text-right">
                         <p className="font-medium text-sm">{store.name}</p>
                         <p className="text-xs text-muted-foreground">{store.owner}</p>
                       </div>
